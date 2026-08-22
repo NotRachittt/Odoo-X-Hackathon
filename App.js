@@ -21,6 +21,20 @@ function appData() {
         filters: { sortBy: 'popular', maxBudget: 4000, duration: 'any', region: 'all' },
         appliedFilters: { sortBy: 'popular', maxBudget: 4000, duration: 'any', region: 'all' },
 
+        /* ---------- top nav trip search ---------- */
+        travelFrom: '',
+        travelTo: '',
+        travelMonth: '',
+
+        /* ---------- left sidebar trip type ---------- */
+        tripType: 'all',
+        tripTypeOptions: [
+            { value: 'all', label: 'All trips', icon: 'fa-solid fa-globe' },
+            { value: 'international', label: 'International', icon: 'fa-solid fa-plane' },
+            { value: 'domestic', label: 'Domestic', icon: 'fa-solid fa-car' },
+            { value: 'visaFree', label: 'Visa free', icon: 'fa-solid fa-passport' }
+        ],
+
         /* ---------- data ---------- */
         cityQuery: '',
         chartInstance: null,
@@ -35,15 +49,15 @@ function appData() {
             { id: 8, name: 'Kyoto', country: 'Japan', costIndex: 'Medium' }
         ],
         famousTrips: [
-            { id: 't1', title: 'Tokyo Neon Nights', country: 'Japan', region: 'Asia', cities: ['Tokyo'], days: 5, price: 1800, rating: 4.8, tags: ['Culture', 'City', 'Foodie'], gradient: 'linear-gradient(135deg,#f857a6,#ff5858)', icon: 'fa-solid fa-torii-gate' },
-            { id: 't2', title: 'Parisian Romance', country: 'France', region: 'Europe', cities: ['Paris'], days: 4, price: 1500, rating: 4.7, tags: ['Romance', 'Iconic'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-champagne-glasses' },
-            { id: 't3', title: 'Bali Bliss Retreat', country: 'Indonesia', region: 'Asia', cities: ['Bali', 'Ubud'], days: 7, price: 1200, rating: 4.9, tags: ['Beach', 'Relax', 'Budget'], gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: 'fa-solid fa-umbrella-beach' },
-            { id: 't4', title: 'Prague Old Town', country: 'Czech Republic', region: 'Europe', cities: ['Prague'], days: 3, price: 800, rating: 4.5, tags: ['History', 'Budget'], gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', icon: 'fa-solid fa-landmark' },
-            { id: 't5', title: 'Santorini Sunsets', country: 'Greece', region: 'Europe', cities: ['Santorini', 'Oia'], days: 5, price: 2200, rating: 4.9, tags: ['Beach', 'Luxury', 'Iconic'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-water' },
-            { id: 't6', title: 'New York City Pulse', country: 'USA', region: 'Americas', cities: ['New York'], days: 4, price: 2000, rating: 4.6, tags: ['City', 'Iconic'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-city' },
-            { id: 't7', title: 'Dubai Desert & Sky', country: 'UAE', region: 'Middle East', cities: ['Dubai'], days: 4, price: 2600, rating: 4.7, tags: ['Luxury', 'Desert'], gradient: 'linear-gradient(135deg,#f5a623,#f76b1c)', icon: 'fa-solid fa-hotel' },
-            { id: 't8', title: 'Iceland Ring Road', country: 'Iceland', region: 'Europe', cities: ['Reykjavik'], days: 8, price: 3200, rating: 4.8, tags: ['Nature', 'Adventure'], gradient: 'linear-gradient(135deg,#7de2fc,#b9b6e5)', icon: 'fa-solid fa-mountain-sun' },
-            { id: 't9', title: 'Kyoto Zen Journey', country: 'Japan', region: 'Asia', cities: ['Kyoto'], days: 6, price: 1900, rating: 4.8, tags: ['Culture', 'Nature'], gradient: 'linear-gradient(135deg,#f78ca0,#fe9a8b)', icon: 'fa-solid fa-spa' }
+            { id: 't1', title: 'Tokyo Neon Nights', country: 'Japan', region: 'Asia', cities: ['Tokyo'], days: 5, price: 1800, rating: 4.8, tags: ['Culture', 'City', 'Foodie'], gradient: 'linear-gradient(135deg,#f857a6,#ff5858)', icon: 'fa-solid fa-torii-gate', type: 'international', visaFree: false },
+            { id: 't2', title: 'Parisian Romance', country: 'France', region: 'Europe', cities: ['Paris'], days: 4, price: 1500, rating: 4.7, tags: ['Romance', 'Iconic'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-champagne-glasses', type: 'international', visaFree: false },
+            { id: 't3', title: 'Bali Bliss Retreat', country: 'Indonesia', region: 'Asia', cities: ['Bali', 'Ubud'], days: 7, price: 1200, rating: 4.9, tags: ['Beach', 'Relax', 'Budget'], gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: 'fa-solid fa-umbrella-beach', type: 'international', visaFree: true },
+            { id: 't4', title: 'Prague Old Town', country: 'Czech Republic', region: 'Europe', cities: ['Prague'], days: 3, price: 800, rating: 4.5, tags: ['History', 'Budget'], gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', icon: 'fa-solid fa-landmark', type: 'international', visaFree: false },
+            { id: 't5', title: 'Santorini Sunsets', country: 'Greece', region: 'Europe', cities: ['Santorini', 'Oia'], days: 5, price: 2200, rating: 4.9, tags: ['Beach', 'Luxury', 'Iconic'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-water', type: 'international', visaFree: false },
+            { id: 't6', title: 'New York City Pulse', country: 'USA', region: 'Americas', cities: ['New York'], days: 4, price: 2000, rating: 4.6, tags: ['City', 'Iconic'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-city', type: 'international', visaFree: false },
+            { id: 't7', title: 'Dubai Desert & Sky', country: 'UAE', region: 'Middle East', cities: ['Dubai'], days: 4, price: 2600, rating: 4.7, tags: ['Luxury', 'Desert'], gradient: 'linear-gradient(135deg,#f5a623,#f76b1c)', icon: 'fa-solid fa-hotel', type: 'international', visaFree: true },
+            { id: 't8', title: 'Iceland Ring Road', country: 'Iceland', region: 'Europe', cities: ['Reykjavik'], days: 8, price: 3200, rating: 4.8, tags: ['Nature', 'Adventure'], gradient: 'linear-gradient(135deg,#7de2fc,#b9b6e5)', icon: 'fa-solid fa-mountain-sun', type: 'international', visaFree: false },
+            { id: 't9', title: 'Kyoto Zen Journey', country: 'Japan', region: 'Asia', cities: ['Kyoto'], days: 6, price: 1900, rating: 4.8, tags: ['Culture', 'Nature'], gradient: 'linear-gradient(135deg,#f78ca0,#fe9a8b)', icon: 'fa-solid fa-spa', type: 'international', visaFree: true }
         ],
         activeTrip: {
             title: 'Euro-Asian Express Tour',
@@ -87,7 +101,7 @@ function appData() {
         },
         get hasActiveFilters() {
             const f = this.appliedFilters;
-            return f.sortBy !== 'popular' || f.maxBudget < 4000 || f.duration !== 'any' || f.region !== 'all' || this.searchQuery.trim() !== '';
+            return f.sortBy !== 'popular' || f.maxBudget < 4000 || f.duration !== 'any' || f.region !== 'all' || this.searchQuery.trim() !== '' || this.tripType !== 'all';
         },
         get filteredTrips() {
             let list = this.famousTrips.slice();
@@ -101,6 +115,8 @@ function appData() {
                     t.tags.join(' ').toLowerCase().includes(q)
                 );
             }
+            if (this.tripType === 'visaFree') list = list.filter(t => t.visaFree);
+            else if (this.tripType !== 'all') list = list.filter(t => t.type === this.tripType);
             const f = this.appliedFilters;
             list = list.filter(t => t.price <= f.maxBudget);
             if (f.region !== 'all') list = list.filter(t => t.region === f.region);
@@ -168,6 +184,10 @@ function appData() {
         clearAll() {
             this.searchQuery = '';
             this.resetFilters();
+            this.tripType = 'all';
+        },
+        toggleTripType(value) {
+            this.tripType = value;
         },
 
         /* ---------- trip methods ---------- */
@@ -254,7 +274,7 @@ function appData() {
                         responsive: true,
                         maintainAspectRatio: false,
                         cutout: '62%',
-                        plugins: { legend: { position: 'bottom', labels: { color: '#0f2942', padding: 16, usePointStyle: true, font: { family: 'Plus Jakarta Sans' } } } }
+                        plugins: { legend: { position: 'bottom', labels: { color: '#0f2942', padding: 16, usePointStyle: true, font: { family: 'Poppins' } } } }
                     }
                 });
             });
