@@ -1,6 +1,3 @@
-/* ================================================================
-   Same Supabase project as the main app — replace with your values.
-   ================================================================ */
 const SUPABASE_URL = 'https://swtrckoomvtrhkraxhce.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_W7yLXagaQYuyDuPY9bokFA__hCdth9Y';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
