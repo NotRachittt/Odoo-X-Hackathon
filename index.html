@@ -326,124 +326,27 @@
                             <button @click="currentTab='budget'"
                                 :class="currentTab==='budget' ? 'bg-ocean-500 text-white shadow-sky' : 'text-slate-600 hover:bg-ocean-50'"
                                 class="px-3.5 py-2 rounded-lg text-sm font-semibold transition">Budget</button>
+                            <button @click="currentTab='tools'"
+                                :class="currentTab==='tools' ? 'bg-ocean-500 text-white shadow-sky' : 'text-slate-600 hover:bg-ocean-50'"
+                                class="px-3.5 py-2 rounded-lg text-sm font-semibold transition">Tools</button>
                         </div>
                     </template>
 
-                    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+                                        <div class="ml-auto flex flex-1 items-center gap-2 sm:gap-3">
                         <!-- Search + Filters -->
-                        <template x-if="!isShareView">
-                            <div class="relative" @click.outside="showFilters=false">
-                                <div
-                                    class="flex items-center gap-2 bg-white border border-ocean-100 rounded-xl pl-3 pr-1.5 py-1.5 shadow-card">
-                                    <i class="fa-solid fa-magnifying-glass text-ocean-400 text-sm"></i>
-                                    <input type="text" x-model="searchQuery"
-                                        @focus="if(currentTab!=='dashboard') currentTab='dashboard'"
-                                        @input="if(currentTab!=='dashboard') currentTab='dashboard'"
-                                        placeholder="Search destinations, trips…"
-                                        class="bg-transparent text-sm outline-none w-28 sm:w-52 placeholder:text-slate-400">
-                                    <button @click="showFilters=!showFilters"
-                                        :class="showFilters ? 'bg-ocean-500 text-white' : 'text-ocean-600 hover:bg-ocean-50'"
-                                        class="relative rounded-lg px-2.5 py-1.5 text-sm transition" title="Filters">
-                                        <i class="fa-solid fa-sliders"></i>
-                                        <span x-show="hasActiveFilters" x-cloak
-                                            class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-coral-500 rounded-full border-2 border-white"></span>
-                                    </button>
-                                </div>
-
-                                <!-- Filter panel -->
-                                <div x-show="showFilters" x-cloak x-transition.origin.top.right
-                                    class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-ocean-100 p-5 z-50">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h4 class="font-bold text-sm flex items-center gap-2"><i
-                                                class="fa-solid fa-filter text-ocean-500"></i> Filters</h4>
-                                        <button @click="resetFilters()"
-                                            class="text-xs font-semibold text-slate-400 hover:text-coral-500">Reset</button>
-                                    </div>
-
-                                    <div class="space-y-4">
-                                        <!-- Sort -->
-                                        <div>
-                                            <label
-                                                class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Sort
-                                                by</label>
-                                            <select x-model="filters.sortBy"
-                                                class="field mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                                                <option value="popular">Most popular</option>
-                                                <option value="priceLow">Price: low to high</option>
-                                                <option value="priceHigh">Price: high to low</option>
-                                                <option value="durationShort">Duration: short to long</option>
-                                                <option value="durationLong">Duration: long to short</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Budget -->
-                                        <div>
-                                            <div class="flex items-center justify-between">
-                                                <label
-                                                    class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Max
-                                                    budget</label>
-                                                <span class="text-sm font-bold text-ocean-600"
-                                                    x-text="'$' + filters.maxBudget"></span>
-                                            </div>
-                                            <input type="range" min="500" max="4000" step="100"
-                                                x-model.number="filters.maxBudget" class="w-full mt-2">
-                                            <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
-                                                <span>$500</span><span>$4000</span></div>
-                                        </div>
-
-                                        <!-- Timeline / trip length -->
-                                        <div>
-                                            <label
-                                                class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Timeline
-                                                (trip length)</label>
-                                            <select x-model="filters.duration"
-                                                class="field mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                                                <option value="any">Any length</option>
-                                                <option value="weekend">Weekend &mdash; up to 3 days</option>
-                                                <option value="short">Short &mdash; 4 to 6 days</option>
-                                                <option value="long">Long &mdash; 7+ days</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Region -->
-                                        <div>
-                                            <label
-                                                class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Region</label>
-                                            <select x-model="filters.region"
-                                                class="field mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                                                <option value="all">All regions</option>
-                                                <option value="Asia">Asia</option>
-                                                <option value="Europe">Europe</option>
-                                                <option value="Americas">Americas</option>
-                                                <option value="Middle East">Middle East</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="flex gap-2 pt-1">
-                                            <button @click="applyFilters()"
-                                                class="btn-primary flex-1 py-2.5 rounded-lg text-sm font-semibold transition">Apply
-                                                filters</button>
-                                            <button @click="resetFilters()"
-                                                class="px-4 py-2.5 rounded-lg text-sm font-semibold border border-slate-200 text-slate-500 hover:bg-slate-50 transition">Clear</button>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="relative flex-1 min-w-0">
+                            <div
+                                class="flex items-center gap-2 bg-white border border-ocean-100 rounded-xl pl-3 pr-3 py-1.5 shadow-card">
+                                <i class="fa-solid fa-magnifying-glass text-ocean-400 text-sm"></i>
+                                <input type="text" x-model="searchQuery"
+                                    @focus="if(currentTab!=='dashboard') currentTab='dashboard'"
+                                    @input="if(currentTab!=='dashboard') currentTab='dashboard'"
+                                    placeholder="Search destinations, trips…"
+                                    class="bg-transparent text-sm outline-none w-full placeholder:text-slate-400">
                             </div>
-                        </template>
+                        </div>
 
-                        <!-- Share toggle -->
-                        <template x-if="!isShareView">
-                            <button @click="toggleShareMode()"
-                                class="hidden sm:flex items-center gap-2 border border-teal-500 text-teal-600 hover:bg-teal-50 px-3 py-2 rounded-xl text-sm font-semibold transition">
-                                <i class="fa-solid fa-share-nodes"></i> Share
-                            </button>
-                        </template>
-                        <template x-if="isShareView">
-                            <button @click="toggleShareMode()"
-                                class="btn-primary flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition">
-                                <i class="fa-solid fa-arrow-left"></i> Exit preview
-                            </button>
-                        </template>
+                        <!-- User menu -->
 
                         <!-- User menu -->
                         <div class="relative" @click.outside="showUserMenu=false">
@@ -476,17 +379,49 @@
                     </div>
                 </div>
 
-                <!-- From / To / Month selector -->
+                                <!-- From / To / Month selector -->
                 <template x-if="!isShareView">
                     <div
                         class="flex flex-wrap items-center gap-1.5 bg-ocean-50/60 border border-ocean-100 rounded-xl px-3 py-2 w-full sm:w-fit">
                         <i class="fa-solid fa-plane-departure text-ocean-400 text-xs ml-1"></i>
-                        <input type="text" x-model="travelFrom" placeholder="From"
-                            class="bg-transparent text-sm outline-none w-24 placeholder:text-slate-400">
+                        <select x-model="travelFrom"
+                            class="bg-transparent text-sm outline-none w-24 text-slate-600">
+                            <option value="">From</option>
+                            <option value="Agra">Agra</option>
+                            <option value="Amritsar">Amritsar</option>
+                            <option value="Bengaluru">Bengaluru</option>
+                            <option value="Jaipur">Jaipur</option>
+                            <option value="Jodhpur">Jodhpur</option>
+                            <option value="Kochi">Kochi</option>
+                            <option value="Madurai">Madurai</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Mysore">Mysore</option>
+                            <option value="Rishikesh">Rishikesh</option>
+                            <option value="Shimla">Shimla</option>
+                            <option value="Udaipur">Udaipur</option>
+                            <option value="Varanasi">Varanasi</option>
+                        </select>
                         <i class="fa-solid fa-arrow-right-long text-ocean-300 text-xs"></i>
                         <i class="fa-solid fa-plane-arrival text-ocean-400 text-xs"></i>
-                        <input type="text" x-model="travelTo" placeholder="To"
-                            class="bg-transparent text-sm outline-none w-24 placeholder:text-slate-400">
+                        <select x-model="travelTo"
+                            class="bg-transparent text-sm outline-none w-24 text-slate-600">
+                            <option value="">To</option>
+                            <option value="Amsterdam">Amsterdam</option>
+                            <option value="Bangkok">Bangkok</option>
+                            <option value="Barcelona">Barcelona</option>
+                            <option value="Cairo">Cairo</option>
+                            <option value="Dubai">Dubai</option>
+                            <option value="Istanbul">Istanbul</option>
+                            <option value="Kyoto">Kyoto</option>
+                            <option value="London">London</option>
+                            <option value="New York City">New York City</option>
+                            <option value="Paris">Paris</option>
+                            <option value="Prague">Prague</option>
+                            <option value="Rome">Rome</option>
+                            <option value="Singapore">Singapore</option>
+                            <option value="Sydney">Sydney</option>
+                            <option value="Tokyo">Tokyo</option>
+                        </select>
                         <div class="w-px h-5 bg-ocean-200 mx-1"></div>
                         <i class="fa-regular fa-calendar text-ocean-400 text-xs"></i>
                         <select x-model="travelMonth" class="bg-transparent text-sm outline-none text-slate-600">
@@ -520,6 +455,9 @@
                     <button @click="currentTab='budget'"
                         :class="currentTab==='budget' ? 'bg-ocean-500 text-white' : 'bg-white text-slate-600 border border-ocean-100'"
                         class="px-3.5 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Budget</button>
+                    <button @click="currentTab='tools'"
+                        :class="currentTab==='tools' ? 'bg-ocean-500 text-white' : 'bg-white text-slate-600 border border-ocean-100'"
+                        class="px-3.5 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Tools</button>
                 </div>
             </template>
         </nav>
