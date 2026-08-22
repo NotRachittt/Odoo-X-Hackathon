@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Globe Trotter — Plan • Budget • Explore</title>
+
+  <!-- Tailwind + theme config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['Fraunces', 'ui-serif', 'Georgia', 'serif']
+          },
+          colors: {
+            ocean: { 50:'#eff9ff',100:'#daf0ff',200:'#bde5ff',300:'#8fd6ff',400:'#59bdff',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' },
+            teal:  { 400:'#2dd4bf',500:'#14b8a6',600:'#0d9488',700:'#0f766e' },
+            coral: { 400:'#ff8a80',500:'#ff6b5c',600:'#f4503c',700:'#d63a28' },
+            ink: '#0f2942'
+          },
+          boxShadow: {
+            card: '0 8px 24px -12px rgba(15,41,66,0.18)',
+            sky:  '0 18px 40px -18px rgba(14,165,233,0.45)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Libs -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Extracted stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="min-h-screen text-ink"
+      x-data="appData()"
+      x-init="$watch('currentTab', v => { if (v === 'budget') renderBudgetChart() })">
+
+  <!-- ============================================================= -->
+  <!-- AUTH SCREEN (Login / Sign up)                                 -->
+  <!-- ============================================================= -->
+  <div x-show="!isAuthenticated" x-cloak class="min-h-screen w-full grid lg:grid-cols-2">
+
+    <!-- Hero panel -->
+    <div class="relative hidden lg:flex flex-col p-10 text-white overflow-hidden"
+         style="background:linear-gradient(150deg,#0ea5e9 0%,#0369a1 48%,#0d9488 100%)">
+
+      <!-- halftone dot backdrop -->
+      <svg class="absolute inset-0 w-full h-full opacity-[0.14] pointer-events-none" preserveAspectRatio="none">
+        <defs>
+          <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="2" fill="#ffffff"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dots)"/>
+      </svg>
+      <div class="absolute -top-16 -right-10 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+      <div class="absolute bottom-0 -left-14 w-72 h-72 rounded-full bg-teal-400/20 blur-2xl pointer-events-none"></div>
+
+      <!-- logo -->
+      <div class="relative flex items-center gap-3">
+        <i class="fa-solid fa-earth-americas text-3xl animate-floaty"></i>
+        <span class="text-2xl font-bold tracking-tight">Globe Trotter</span>
+      </div>
+
+      <!-- tagline (kept) -->
+      <p class="relative uppercase tracking-[0.35em] text-ocean-100/80 text-xs mt-6">Plan &middot; Budget &middot; Explore</p>
+
+      <!-- neo-brutalist stickers -->
+      <div class="brutal-sticker absolute left-8 top-40 w-14 h-14 grid place-items-center -rotate-12 text-lg z-10">
+        <i class="fa-solid fa-plane"></i>
+      </div>
+      <div class="brutal-sticker absolute right-10 bottom-24 w-16 h-16 grid place-items-center rotate-6 text-sm font-extrabold z-10">
+        GO!
+      </div>
+
+      <!-- traveler illustration -->
+      <div class="relative flex-1 flex items-center justify-center mt-2">
+        <svg id="travelerSvg" viewBox="0 0 420 460" class="w-full max-w-sm animate-bob" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- sun -->
+          <g stroke="#0f2942" stroke-width="4" stroke-linecap="round">
+            <circle cx="358" cy="58" r="30" fill="#FFD400" stroke-width="5"/>
+            <line x1="358" y1="8" x2="358" y2="-4"/>
+            <line x1="358" y1="108" x2="358" y2="120"/>
+            <line x1="308" y1="58" x2="296" y2="58"/>
+            <line x1="408" y1="58" x2="420" y2="58"/>
+            <line x1="323" y1="23" x2="315" y2="15"/>
+            <line x1="393" y1="93" x2="401" y2="101"/>
+            <line x1="393" y1="23" x2="401" y2="15"/>
+            <line x1="323" y1="93" x2="315" y2="101"/>
+          </g>
+
+          <!-- ground shadow -->
+          <ellipse cx="205" cy="420" rx="140" ry="16" fill="#0f2942" opacity="0.22"/>
+
+          <!-- motion lines behind suitcase -->
+          <g class="motion-line" stroke="#0f2942" stroke-width="4" stroke-linecap="round" stroke-dasharray="7,8">
+            <line x1="246" y1="352" x2="272" y2="352"/>
+            <line x1="240" y1="364" x2="272" y2="364"/>
+            <line x1="246" y1="376" x2="272" y2="376"/>
+          </g>
+
+          <!-- suitcase -->
+          <g>
+            <rect x="286" y="277" width="72" height="88" rx="12" fill="#0f2942"/>
+            <rect x="280" y="271" width="72" height="88" rx="12" fill="#FF6B5C" stroke="#0f2942" stroke-width="5"/>
+            <rect x="280" y="306" width="72" height="16" fill="#FFD400" stroke="#0f2942" stroke-width="3"/>
+            <path d="M305,271 v-18 q0,-10 10,-10 h10 q10,0 10,10 v18" fill="none" stroke="#0f2942" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="296" cy="364" r="9" fill="#0f2942"/>
+            <circle cx="336" cy="364" r="9" fill="#0f2942"/>
+            <circle cx="316" cy="291" r="12" fill="#fff" stroke="#0f2942" stroke-width="3" stroke-dasharray="3,4"/>
+            <path d="M316,285 l2.4,5 5.6,0.6 -4,4 1,5.6 -4.9,-2.7 -5,2.7 1,-5.6 -4,-4 5.6,-0.6 z" fill="#FFD400" stroke="#0f2942" stroke-width="1.5"/>
+          </g>
+
+          <!-- extended arm to suitcase handle (drawn under torso) -->
+          <path d="M236,246 Q272,236 300,257" fill="none" stroke="#0f2942" stroke-width="26" stroke-linecap="round"/>
+          <path d="M236,246 Q272,236 300,257" fill="none" stroke="#FFD9A8" stroke-width="18" stroke-linecap="round"/>
+          <circle cx="300" cy="257" r="12" fill="#FFD9A8" stroke="#0f2942" stroke-width="4"/>
+
+          <!-- resting arm -->
+          <path d="M156,246 Q134,262 139,288" fill="none" stroke="#0f2942" stroke-width="26" stroke-linecap="round"/>
+          <path d="M156,246 Q134,262 139,288" fill="none" stroke="#FFD9A8" stroke-width="18" stroke-linecap="round"/>
+          <circle cx="139" cy="288" r="11" fill="#FFD9A8" stroke="#0f2942" stroke-width="4"/>
+
+          <!-- back leg -->
+          <rect x="166" y="330" width="24" height="58" rx="10" fill="#FFD9A8" stroke="#0f2942" stroke-width="4"/>
+          <ellipse cx="178" cy="392" rx="17" ry="10" fill="#0f2942"/>
+
+          <!-- front leg -->
+          <rect x="206" y="330" width="24" height="58" rx="10" fill="#FFD9A8" stroke="#0f2942" stroke-width="4"/>
+          <ellipse cx="218" cy="392" rx="17" ry="10" fill="#0f2942"/>
+
+          <!-- shorts -->
+          <rect x="158" y="308" width="78" height="38" rx="15" fill="#0369a1" stroke="#0f2942" stroke-width="5"/>
+
+          <!-- torso / shirt -->
+          <rect x="150" y="228" width="94" height="92" rx="28" fill="#FFD400" stroke="#0f2942" stroke-width="5"/>
+          <g stroke="#0f2942" stroke-width="1.5">
+            <circle cx="172" cy="254" r="5" fill="#FF6B5C"/>
+            <circle cx="212" cy="248" r="4" fill="#0d9488"/>
+            <circle cx="196" cy="276" r="5" fill="#FF6B5C"/>
+            <circle cx="226" cy="282" r="4" fill="#0d9488"/>
+            <circle cx="164" cy="292" r="4" fill="#0d9488"/>
+            <circle cx="220" cy="304" r="5" fill="#FF6B5C"/>
+          </g>
+
+          <!-- neck -->
+          <rect x="185" y="208" width="24" height="26" fill="#FFD9A8" stroke="#0f2942" stroke-width="4"/>
+
+          <!-- head -->
+          <circle cx="200" cy="160" r="68" fill="#FFD9A8" stroke="#0f2942" stroke-width="6"/>
+
+          <!-- hat -->
+          <ellipse cx="200" cy="112" rx="90" ry="20" fill="#0d9488" stroke="#0f2942" stroke-width="5"/>
+          <path d="M138,112 Q200,52 262,112 Z" fill="#0d9488" stroke="#0f2942" stroke-width="5"/>
+          <rect x="150" y="100" width="100" height="14" fill="#FFD400" stroke="#0f2942" stroke-width="3"/>
+
+          <!-- eyebrows -->
+          <path d="M160,140 q16,-11 32,-2" fill="none" stroke="#0f2942" stroke-width="4" stroke-linecap="round"/>
+          <path d="M208,138 q16,-9 32,2" fill="none" stroke="#0f2942" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- eyes (whites) -->
+          <circle cx="176" cy="163" r="17" fill="#fff" stroke="#0f2942" stroke-width="4"/>
+          <circle cx="224" cy="163" r="17" fill="#fff" stroke="#0f2942" stroke-width="4"/>
+          <!-- pupils: positions updated by cursor-tracking script -->
+          <circle id="pupilLeft" cx="176" cy="163" r="8" fill="#0f2942"/>
+          <circle id="pupilRight" cx="224" cy="163" r="8" fill="#0f2942"/>
+
+          <!-- blush -->
+          <circle cx="158" cy="186" r="10" fill="#FF6B5C" opacity="0.4"/>
+          <circle cx="242" cy="186" r="10" fill="#FF6B5C" opacity="0.4"/>
+
+          <!-- mouth -->
+          <path d="M184,197 q16,15 32,0" fill="none" stroke="#0f2942" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="flex items-center justify-center p-6 sm:p-12">
+      <div class="w-full max-w-md animate-fadeUp">
+        <div class="lg:hidden flex items-center gap-2 mb-8 text-ocean-600">
+          <i class="fa-solid fa-earth-americas text-2xl"></i>
+          <span class="text-xl font-bold">Globe Trotter</span>
+        </div>
+
+        <h2 class="font-display text-3xl font-bold" x-text="authMode === 'login' ? 'Welcome back' : 'Create your account'"></h2>
+        <p class="text-slate-500 mt-1" x-text="authMode === 'login' ? 'Log in to keep planning your trips.' : 'Start planning in under a minute.'"></p>
+
+        <!-- toggle -->
+        <div class="mt-6 grid grid-cols-2 gap-1 p-1 bg-ocean-50 rounded-xl text-sm font-semibold">
+          <button type="button" @click="authMode='login'; authError=''"
+                  :class="authMode==='login' ? 'bg-white shadow-card text-ocean-700' : 'text-slate-500 hover:text-ocean-600'"
+                  class="py-2 rounded-lg transition">Log in</button>
+          <button type="button" @click="authMode='signup'; authError=''"
+                  :class="authMode==='signup' ? 'bg-white shadow-card text-ocean-700' : 'text-slate-500 hover:text-ocean-600'"
+                  class="py-2 rounded-lg transition">Sign up</button>
+        </div>
+
+        <form @submit.prevent="authMode==='login' ? login() : signup()" class="mt-6 space-y-4">
+          <div x-show="authMode==='signup'">
+            <label class="block text-sm font-medium text-slate-600 mb-1.5">Full name</label>
+            <div class="relative">
+              <i class="fa-regular fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" x-model="authForm.name" placeholder="Rachit Shrirame"
+                     class="field w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 py-3 text-sm">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1.5">Email</label>
+            <div class="relative">
+              <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="email" x-model="authForm.email" placeholder="you@example.com"
+                     class="field w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 py-3 text-sm">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-sm font-medium text-slate-600">Password</label>
+              <a href="#" x-show="authMode==='login'" @click.prevent="showToast('Password reset link sent (demo).')"
+                 class="text-xs font-semibold text-ocean-600 hover:text-ocean-700">Forgot password?</a>
+            </div>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input :type="showPassword ? 'text' : 'password'" x-model="authForm.password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                     class="field w-full rounded-xl border border-slate-200 bg-white pl-11 pr-11 py-3 text-sm">
+              <button type="button" @click="showPassword=!showPassword"
+                      class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-ocean-600">
+                <i :class="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <p x-show="authError" x-cloak class="text-coral-600 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i><span x-text="authError"></span>
+          </p>
+
+          <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold transition"
+                  x-text="authMode==='login' ? 'Log in' : 'Create account'"></button>
+        </form>
+
+        <div class="flex items-center gap-4 my-6">
+          <div class="h-px bg-slate-200 flex-1"></div>
+          <span class="text-xs text-slate-400 font-medium">OR</span>
+          <div class="h-px bg-slate-200 flex-1"></div>
+        </div>
+
+        <button @click="guestMode()"
+                class="w-full py-3 rounded-xl border border-ocean-200 text-ocean-700 font-semibold hover:bg-ocean-50 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-compass"></i> Explore as guest
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- MAIN APP                                                      -->
+  <!-- ============================================================= -->
+  <div x-show="isAuthenticated" x-cloak>
+
+    <!-- Navigation -->
+    <nav class="glass border-b border-ocean-100 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
+        <!-- logo -->
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-earth-americas text-ocean-500 text-2xl"></i>
+          <span class="text-lg font-bold tracking-tight">Globe Trotter</span>
+        </div>
+
+        <!-- desktop tabs -->
+        <template x-if="!isShareView">
+          <div class="hidden lg:flex items-center gap-1 ml-4">
+            <button @click="currentTab='dashboard'" :class="currentTab==='dashboard' ? 'bg-ocean-500 text-white shadow-sky' : 'text-slate-600 hover:bg-ocean-50'" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition">Dashboard</button>
+            <button @click="currentTab='planner'" :class="currentTab==='planner' ? 'bg-ocean-500 text-white shadow-sky' : 'text-slate-600 hover:bg-ocean-50'" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition">Trip Planner</button>
+            <button @click="currentTab='budget'" :class="currentTab==='budget' ? 'bg-ocean-500 text-white shadow-sky' : 'text-slate-600 hover:bg-ocean-50'" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition">Budget</button>
+          </div>
+        </template>
+
+        <div class="ml-auto flex items-center gap-2 sm:gap-3">
+          <!-- Search + Filters -->
+          <template x-if="!isShareView">
+            <div class="relative" @click.outside="showFilters=false">
+              <div class="flex items-center gap-2 bg-white border border-ocean-100 rounded-xl pl-3 pr-1.5 py-1.5 shadow-card">
+                <i class="fa-solid fa-magnifying-glass text-ocean-400 text-sm"></i>
+                <input type="text" x-model="searchQuery"
+                       @focus="if(currentTab!=='dashboard') currentTab='dashboard'"
+                       @input="if(currentTab!=='dashboard') currentTab='dashboard'"
+                       placeholder="Search destinations, trips…"
+                       class="bg-transparent text-sm outline-none w-28 sm:w-52 placeholder:text-slate-400">
+                <button @click="showFilters=!showFilters"
+                        :class="showFilters ? 'bg-ocean-500 text-white' : 'text-ocean-600 hover:bg-ocean-50'"
+                        class="relative rounded-lg px-2.5 py-1.5 text-sm transition" title="Filters">
+                  <i class="fa-solid fa-sliders"></i>
+                  <span x-show="hasActiveFilters" x-cloak class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-coral-500 rounded-full border-2 border-white"></span>
+                </button>
+              </div>
+
+              <!-- Filter panel -->
+              <div x-show="showFilters" x-cloak x-transition.origin.top.right
+                   class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-ocean-100 p-5 z-50">
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-filter text-ocean-500"></i> Filters</h4>
+                  <button @click="resetFilters()" class="text-xs font-semibold text-slate-400 hover:text-coral-500">Reset</button>
+                </div>
+
+                <div class="space-y-4">
+                  <!-- Sort -->
+                  <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Sort by</label>
+                    <select x-model="filters.sortBy" class="field mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <option value="popular">Most popular</option>
+                      <option value="priceLow">Price: low to high</option>
+                      <option value="priceHigh">Price: high to low</option>
+                      <option value="durationShort">Duration: short to long</option>
+                      <option value="durationLong">Duration: long to short</option>
+                    </select>
+                  </div>
+
+                  <!-- Budget -->
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Max budget</label>
+                      <span class="text-sm font-bold text-ocean-600" x-text="'$' + filters.maxBudget"></span>
+                    </div>
+                    <input type="range" min="500" max="4000" step="100" x-model.number="filters.maxBudget" class="w-full mt-2">
+                    <div class="flex justify-between text-[10px] text-slate-400 mt-0.5"><span>$500</span><span>$4000</span></div>
+                  </div>
+
+                  <!-- Timeline / trip length -->
+                  <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Timeline (trip length)</label>
+                    <select x-model="filters.duration" class="field mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <option value="any">Any length</option>
+                      <option value="weekend">Weekend &mdash; up to 3 days</option>
+                      <option value="short">Short &mdash; 4 to 6 days</option>
+                      <option value="long">Long &mdash; 7+ days</option>
+                    </select>
+                  </div>
+
+                  <!-- Region -->
+                  <div>
+                    <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Region</label>
+                    <select x-model="filters.region" class="field mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <option value="all">All regions</option>
+                      <option value="Asia">Asia</option>
+                      <option value="Europe">Europe</option>
+                      <option value="Americas">Americas</option>
+                      <option value="Middle East">Middle East</option>
+                    </select>
+                  </div>
+
+                  <div class="flex gap-2 pt-1">
+                    <button @click="applyFilters()" class="btn-primary flex-1 py-2.5 rounded-lg text-sm font-semibold transition">Apply filters</button>
+                    <button @click="resetFilters()" class="px-4 py-2.5 rounded-lg text-sm font-semibold border border-slate-200 text-slate-500 hover:bg-slate-50 transition">Clear</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Share toggle -->
+          <template x-if="!isShareView">
+            <button @click="toggleShareMode()" class="hidden sm:flex items-center gap-2 border border-teal-500 text-teal-600 hover:bg-teal-50 px-3 py-2 rounded-xl text-sm font-semibold transition">
+              <i class="fa-solid fa-share-nodes"></i> Share
+            </button>
+          </template>
+          <template x-if="isShareView">
+            <button @click="toggleShareMode()" class="btn-primary flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition">
+              <i class="fa-solid fa-arrow-left"></i> Exit preview
+            </button>
+          </template>
+
+          <!-- User menu -->
+          <div class="relative" @click.outside="showUserMenu=false">
+            <button @click="showUserMenu=!showUserMenu" class="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-ocean-50 transition">
+              <span class="w-9 h-9 rounded-full btn-primary grid place-items-center text-sm font-bold" x-text="initials"></span>
+              <span class="hidden sm:block text-sm font-semibold text-slate-700 max-w-[8rem] truncate" x-text="user.name"></span>
+              <i class="fa-solid fa-chevron-down text-xs text-slate-400 hidden sm:block"></i>
+            </button>
+            <div x-show="showUserMenu" x-cloak x-transition.origin.top.right class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-ocean-100 p-2 z-50">
+              <div class="px-3 py-2 border-b border-slate-100 mb-1">
+                <p class="text-sm font-semibold truncate" x-text="user.name"></p>
+                <p class="text-xs text-slate-400 truncate" x-text="user.email || 'Guest session'"></p>
+              </div>
+              <button class="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-ocean-50 flex items-center gap-2.5"><i class="fa-regular fa-user w-4"></i> My profile</button>
+              <button class="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-ocean-50 flex items-center gap-2.5"><i class="fa-solid fa-gear w-4"></i> Settings</button>
+              <button @click="logout()" class="w-full text-left px-3 py-2 rounded-lg text-sm text-coral-600 hover:bg-coral-50 flex items-center gap-2.5"><i class="fa-solid fa-right-from-bracket w-4"></i> Log out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- mobile tabs -->
+      <template x-if="!isShareView">
+        <div class="lg:hidden flex items-center gap-1 px-4 pb-3 overflow-x-auto">
+          <button @click="currentTab='dashboard'" :class="currentTab==='dashboard' ? 'bg-ocean-500 text-white' : 'bg-white text-slate-600 border border-ocean-100'" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Dashboard</button>
+          <button @click="currentTab='planner'" :class="currentTab==='planner' ? 'bg-ocean-500 text-white' : 'bg-white text-slate-600 border border-ocean-100'" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Trip Planner</button>
+          <button @click="currentTab='budget'" :class="currentTab==='budget' ? 'bg-ocean-500 text-white' : 'bg-white text-slate-600 border border-ocean-100'" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">Budget</button>
+        </div>
+      </template>
+    </nav>
+
+    <!-- Share notice -->
+    <div x-show="isShareView" x-cloak class="bg-teal-50 border-b border-teal-200 text-teal-700 px-6 py-2.5 text-center text-sm flex items-center justify-center gap-2">
+      <i class="fa-solid fa-eye"></i> Public view — you're reading a shared itinerary for <strong x-text="activeTrip.title"></strong>
+    </div>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section x-show="currentTab==='dashboard' && !isShareView" class="space-y-10">
+        <!-- header -->
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
+          <div>
+            <p class="text-ocean-500 font-semibold text-sm">Welcome back<span x-show="user.name">, </span><span x-text="user.name"></span> 👋</p>
+            <h1 class="font-display text-3xl sm:text-4xl font-bold mt-1">Where to next?</h1>
+            <p class="text-slate-500 mt-1">Pick up your plan or get inspired by a famous trip.</p>
+          </div>
+          <button @click="newTrip()" class="btn-primary px-5 py-3 rounded-xl font-semibold transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-plus"></i> Plan new trip
+          </button>
+        </div>
+
+        <!-- Active trip — boarding pass -->
+        <div>
+          <h2 class="font-display text-xl font-bold mb-3 flex items-center gap-2"><i class="fa-solid fa-plane-departure text-ocean-500"></i> Your active trip</h2>
+          <div class="bg-white rounded-2xl shadow-card border border-ocean-50 overflow-hidden flex flex-col md:flex-row card-hover cursor-pointer" @click="currentTab='planner'">
+            <!-- stub -->
+            <div class="md:w-56 p-6 text-white flex md:flex-col justify-between items-start gap-4" style="background:linear-gradient(150deg,#0ea5e9,#0d9488)">
+              <div>
+                <p class="text-ocean-50/80 text-xs uppercase tracking-widest">Boarding pass</p>
+                <p class="font-display text-2xl font-bold mt-1" x-text="tripInitials"></p>
+              </div>
+              <i class="fa-solid fa-plane text-3xl opacity-80"></i>
+            </div>
+            <!-- body -->
+            <div class="flex-1 p-6 md:perf">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="font-display text-2xl font-bold" x-text="activeTrip.title"></h3>
+                  <p class="text-slate-500 text-sm mt-1" x-text="activeTrip.description"></p>
+                </div>
+                <span class="bg-ocean-50 text-ocean-700 text-xs font-semibold px-3 py-1 rounded-full border border-ocean-100 shrink-0">Active</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 text-sm">
+                <div><p class="text-slate-400 text-xs">Dates</p><p class="font-semibold" x-text="activeTrip.startDate"></p><p class="text-slate-400 text-xs">to <span x-text="activeTrip.endDate"></span></p></div>
+                <div><p class="text-slate-400 text-xs">Stops</p><p class="font-semibold text-lg" x-text="activeTrip.stops.length"></p></div>
+                <div><p class="text-slate-400 text-xs">Estimated</p><p class="font-semibold text-lg text-teal-600" x-text="'$' + calculateTotalCost()"></p></div>
+                <div><p class="text-slate-400 text-xs">Target budget</p><p class="font-semibold text-lg" x-text="'$' + activeTrip.targetBudget"></p></div>
+              </div>
+              <!-- budget bar -->
+              <div class="mt-4">
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all" :class="calculateTotalCost() > activeTrip.targetBudget ? 'bg-coral-500' : 'bg-teal-500'"
+                       :style="'width:' + budgetPct + '%'"></div>
+                </div>
+                <p class="text-xs mt-1.5" :class="calculateTotalCost() > activeTrip.targetBudget ? 'text-coral-600 font-semibold' : 'text-slate-400'"
+                   x-text="calculateTotalCost() > activeTrip.targetBudget ? 'Over budget by $' + (calculateTotalCost() - activeTrip.targetBudget) : '$' + (activeTrip.targetBudget - calculateTotalCost()) + ' left in budget'"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Famous trips -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
+            <div>
+              <h2 class="font-display text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-fire text-coral-500"></i> Famous trips</h2>
+              <p class="text-slate-500 text-sm">Hand-picked journeys loved by travelers.</p>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+              <span class="text-slate-500"><strong x-text="filteredTrips.length"></strong> trip<span x-show="filteredTrips.length !== 1">s</span></span>
+              <button x-show="hasActiveFilters" x-cloak @click="clearAll()" class="text-ocean-600 font-semibold hover:text-ocean-700 flex items-center gap-1"><i class="fa-solid fa-xmark"></i> Clear all</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="trip in filteredTrips" :key="trip.id">
+              <article class="bg-white rounded-2xl overflow-hidden shadow-card border border-ocean-50 card-hover flex flex-col">
+                <div class="relative h-36" :style="'background:' + trip.gradient">
+                  <div class="absolute inset-0 bg-black/10"></div>
+                  <span class="absolute top-3 left-3 bg-white/90 text-ink text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                    <i class="fa-solid fa-star text-amber-400"></i><span x-text="trip.rating"></span>
+                  </span>
+                  <span x-show="trip.rating >= 4.8" class="absolute top-3 right-3 bg-coral-500 text-white text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">Popular</span>
+                  <div class="absolute bottom-3 left-4 right-4 text-white">
+                    <i :class="trip.icon" class="text-lg mb-1 opacity-90"></i>
+                    <h4 class="font-display text-xl font-bold leading-tight" x-text="trip.title"></h4>
+                    <p class="text-xs opacity-90" x-text="trip.country + ' • ' + trip.region"></p>
+                  </div>
+                </div>
+                <div class="p-4 flex flex-col flex-1">
+                  <div class="flex flex-wrap gap-1.5 mb-3">
+                    <template x-for="tag in trip.tags" :key="tag">
+                      <span class="bg-ocean-50 text-ocean-700 text-[11px] font-semibold px-2 py-0.5 rounded-full" x-text="tag"></span>
+                    </template>
+                  </div>
+                  <div class="flex items-center justify-between mt-auto">
+                    <span class="text-sm text-slate-500 flex items-center gap-1.5"><i class="fa-regular fa-clock text-ocean-400"></i><span x-text="trip.days + ' days'"></span></span>
+                    <span class="text-sm text-slate-400">from <span class="text-lg font-bold text-ocean-700" x-text="'$' + trip.price"></span></span>
+                  </div>
+                  <button @click="startTripFromFamous(trip)" class="btn-primary w-full mt-3 py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Start this trip
+                  </button>
+                </div>
+              </article>
+            </template>
+          </div>
+
+          <!-- empty state -->
+          <div x-show="filteredTrips.length === 0" x-cloak class="text-center py-16 bg-white rounded-2xl border border-dashed border-ocean-200">
+            <i class="fa-solid fa-map-location-dot text-4xl text-ocean-200"></i>
+            <p class="mt-3 font-semibold text-slate-600">No trips match your filters</p>
+            <p class="text-sm text-slate-400">Try widening the budget or clearing filters.</p>
+            <button @click="clearAll()" class="mt-4 text-ocean-600 font-semibold hover:text-ocean-700">Clear all filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TRIP PLANNER ================= -->
+      <section x-show="currentTab==='planner' || isShareView" class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+
+        <!-- left column -->
+        <div x-show="!isShareView" class="space-y-6 lg:col-span-1">
+          <div class="bg-white border border-ocean-50 shadow-card rounded-2xl p-5 space-y-4">
+            <h2 class="text-lg font-bold flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-ocean-500"></i> Discover cities</h2>
+            <input type="text" x-model="cityQuery" placeholder="Search cities to add (e.g. Tokyo)…"
+                   class="field w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm">
+            <div class="space-y-2 max-h-72 overflow-y-auto nice-scroll pr-1">
+              <template x-for="city in filteredCities" :key="city.id">
+                <div class="flex justify-between items-center p-3 bg-ocean-50/40 border border-ocean-50 rounded-lg hover:border-ocean-200 transition">
+                  <div>
+                    <p class="font-semibold text-sm" x-text="city.name"></p>
+                    <p class="text-xs text-slate-500" x-text="city.country + ' • Cost: ' + city.costIndex"></p>
+                  </div>
+                  <button @click="addStop(city)" class="text-xs bg-ocean-100 hover:bg-ocean-500 text-ocean-700 hover:text-white px-2.5 py-1.5 rounded-lg font-semibold transition">
+                    <i class="fa-solid fa-plus"></i> Add
+                  </button>
+                </div>
+              </template>
+              <p x-show="filteredCities.length === 0" x-cloak class="text-sm text-slate-400 text-center py-4">No cities found.</p>
+            </div>
+          </div>
+
+          <div class="bg-white border border-ocean-50 shadow-card rounded-2xl p-5 space-y-4">
+            <h2 class="text-lg font-bold flex items-center gap-2"><i class="fa-solid fa-circle-plus text-teal-500"></i> Add custom item</h2>
+            <p x-show="activeTrip.stops.length === 0" x-cloak class="text-xs text-coral-600 bg-coral-50 rounded-lg px-3 py-2">Add a city stop first — items attach to your first stop.</p>
+            <div class="space-y-3">
+              <input type="text" x-model="newItem.title" placeholder="Item / activity name…"
+                     class="field w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm">
+              <div class="grid grid-cols-2 gap-2">
+                <select x-model="newItem.category" class="field bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm">
+                  <option value="activities">Activity</option>
+                  <option value="stay">Stay</option>
+                  <option value="transport">Transport</option>
+                  <option value="meals">Meal</option>
+                </select>
+                <input type="number" x-model.number="newItem.cost" placeholder="Cost ($)"
+                       class="field bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm">
+              </div>
+              <button @click="addItem()" class="btn-primary w-full py-2.5 rounded-lg text-sm font-semibold transition">Add to itinerary</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- right column: timeline -->
+        <div :class="isShareView ? 'lg:col-span-3' : 'lg:col-span-2'" class="space-y-6">
+          <div class="bg-white border border-ocean-50 shadow-card rounded-2xl p-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-slate-100 pb-4 mb-6 gap-3">
+              <div>
+                <h1 class="font-display text-2xl font-bold" x-text="activeTrip.title"></h1>
+                <p class="text-slate-500 text-sm mt-1" x-text="activeTrip.description"></p>
+                <p class="text-xs text-slate-400 mt-2"><i class="fa-regular fa-calendar mr-1.5 text-ocean-400"></i><span x-text="activeTrip.startDate"></span> &rarr; <span x-text="activeTrip.endDate"></span></p>
+              </div>
+              <div class="text-left sm:text-right shrink-0">
+                <span class="text-xs text-slate-400">Total estimated</span>
+                <p class="text-3xl font-bold text-teal-600" x-text="'$' + calculateTotalCost()"></p>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              <template x-for="(stop, index) in activeTrip.stops" :key="stop.id">
+                <div class="border-l-2 border-ocean-300 pl-5 py-1 space-y-3 relative">
+                  <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-ocean-500 border-2 border-white shadow"></div>
+                  <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-ocean-700" x-text="'Stop ' + (index + 1) + ': ' + stop.cityName"></h3>
+                    <template x-if="!isShareView">
+                      <button @click="removeStop(index)" class="text-xs text-coral-500 hover:text-coral-700 font-semibold flex items-center gap-1"><i class="fa-solid fa-trash-can"></i> Remove</button>
+                    </template>
+                  </div>
+                  <div class="space-y-2">
+                    <template x-for="(item, iIndex) in stop.items" :key="iIndex">
+                      <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div class="flex items-center gap-3">
+                          <span class="text-[10px] uppercase px-2 py-0.5 rounded font-bold tracking-wide"
+                                :class="{
+                                  'bg-ocean-100 text-ocean-700': item.category === 'activities',
+                                  'bg-teal-100 text-teal-700': item.category === 'stay',
+                                  'bg-coral-100 text-coral-600': item.category === 'transport',
+                                  'bg-amber-100 text-amber-700': item.category === 'meals'
+                                }" x-text="item.category"></span>
+                          <span class="text-sm text-slate-700" x-text="item.title"></span>
+                        </div>
+                        <span class="text-sm font-bold text-slate-600" x-text="'$' + item.cost"></span>
+                      </div>
+                    </template>
+                    <p x-show="stop.items.length === 0" x-cloak class="text-xs text-slate-400 italic pl-1">No items yet — add activities, stays or meals.</p>
+                  </div>
+                </div>
+              </template>
+              <div x-show="activeTrip.stops.length === 0" x-cloak class="text-center py-12 border-2 border-dashed border-ocean-100 rounded-xl">
+                <i class="fa-solid fa-route text-3xl text-ocean-200"></i>
+                <p class="mt-2 text-slate-500 font-medium">Your itinerary is empty</p>
+                <p class="text-sm text-slate-400">Add a city from the left to start building.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= BUDGET ================= -->
+      <section x-show="currentTab==='budget' && !isShareView" class="space-y-6">
+        <div class="bg-white border border-ocean-50 shadow-card rounded-2xl p-6">
+          <h2 class="text-xl font-bold mb-6 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-ocean-500"></i> Budget &amp; analytics</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="relative h-64">
+              <canvas id="budgetChart"></canvas>
+            </div>
+            <div class="space-y-4">
+              <div class="bg-ocean-50/60 p-4 rounded-xl border border-ocean-100">
+                <span class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Total expenses</span>
+                <p class="text-3xl font-bold text-teal-600" x-text="'$' + calculateTotalCost()"></p>
+              </div>
+              <div class="bg-ocean-50/60 p-4 rounded-xl border border-ocean-100">
+                <span class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Budget status</span>
+                <p class="text-sm mt-1 font-semibold" :class="calculateTotalCost() > activeTrip.targetBudget ? 'text-coral-600' : 'text-teal-600'">
+                  <i :class="calculateTotalCost() > activeTrip.targetBudget ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check'" class="mr-1"></i>
+                  <span x-text="calculateTotalCost() > activeTrip.targetBudget ? 'Over budget by $' + (calculateTotalCost() - activeTrip.targetBudget) : 'Within budget (target $' + activeTrip.targetBudget + ')'"></span>
+                </p>
+              </div>
+              <!-- category legend -->
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:#0ea5e9"></span> Activities <span class="ml-auto font-semibold" x-text="'$' + calculateCategoryTotals().activities"></span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:#0d9488"></span> Stay <span class="ml-auto font-semibold" x-text="'$' + calculateCategoryTotals().stay"></span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:#ff6b5c"></span> Transport <span class="ml-auto font-semibold" x-text="'$' + calculateCategoryTotals().transport"></span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" style="background:#f59e0b"></span> Meals <span class="ml-auto font-semibold" x-text="'$' + calculateCategoryTotals().meals"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div x-show="toast" x-cloak x-transition class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-ink text-white px-5 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-teal-400"></i><span x-text="toast"></span>
+  </div>
+
+  <!-- App state -->
+  <script src="app.js"></script>
+
+  <!-- Cursor-tracking eyes for the hero illustration -->
+  <script src="eyes.js"></script>
+</body>
+</html>
