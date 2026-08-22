@@ -12,52 +12,88 @@ function appData() {
         currentTab: 'dashboard',
         isShareView: false,
         showUserMenu: false,
-        showFilters: false,
         toast: '',
         _toastTimer: null,
 
         /* ---------- search & filters ---------- */
         searchQuery: '',
-        filters: { sortBy: 'popular', maxBudget: 4000, duration: 'any', region: 'all' },
-        appliedFilters: { sortBy: 'popular', maxBudget: 4000, duration: 'any', region: 'all' },
+        filters: { tripType: 'all', sortBy: 'popular', maxBudget: 3000, maxDays: 8, weatherTags: [], region: 'all' },
+        appliedFilters: { tripType: 'all', sortBy: 'popular', maxBudget: 3000, maxDays: 8, weatherTags: [], region: 'all' },
+        weatherOptions: ['Rain', 'No rain', 'Snow', 'Pollution free', 'Colder', 'Warmer'],
 
         /* ---------- top nav trip search ---------- */
-        travelFrom: '',
         travelTo: '',
         travelMonth: '',
 
         /* ---------- left sidebar trip type ---------- */
-        tripType: 'all',
         tripTypeOptions: [
             { value: 'all', label: 'All trips', icon: 'fa-solid fa-globe' },
             { value: 'international', label: 'International', icon: 'fa-solid fa-plane' },
-            { value: 'domestic', label: 'Domestic', icon: 'fa-solid fa-car' },
-            { value: 'visaFree', label: 'Visa free', icon: 'fa-solid fa-passport' }
+            { value: 'domestic', label: 'Domestic', icon: 'fa-solid fa-car' }
         ],
 
         /* ---------- data ---------- */
         cityQuery: '',
         chartInstance: null,
         cities: [
-            { id: 1, name: 'Tokyo', country: 'Japan', costIndex: 'High' },
-            { id: 2, name: 'Paris', country: 'France', costIndex: 'High' },
-            { id: 3, name: 'Bali', country: 'Indonesia', costIndex: 'Low' },
-            { id: 4, name: 'Prague', country: 'Czech Republic', costIndex: 'Medium' },
-            { id: 5, name: 'Santorini', country: 'Greece', costIndex: 'High' },
-            { id: 6, name: 'New York', country: 'USA', costIndex: 'High' },
-            { id: 7, name: 'Dubai', country: 'UAE', costIndex: 'High' },
-            { id: 8, name: 'Kyoto', country: 'Japan', costIndex: 'Medium' }
+            { id: 1, name: 'Agra', country: 'India', costIndex: 'Low' },
+            { id: 2, name: 'Jaipur', country: 'India', costIndex: 'Low' },
+            { id: 3, name: 'Varanasi', country: 'India', costIndex: 'Low' },
+            { id: 4, name: 'Udaipur', country: 'India', costIndex: 'Medium' },
+            { id: 5, name: 'Mumbai', country: 'India', costIndex: 'Medium' },
+            { id: 6, name: 'Amritsar', country: 'India', costIndex: 'Low' },
+            { id: 7, name: 'Bengaluru', country: 'India', costIndex: 'Medium' },
+            { id: 8, name: 'Shimla', country: 'India', costIndex: 'Low' },
+            { id: 9, name: 'Mysore', country: 'India', costIndex: 'Low' },
+            { id: 10, name: 'Jodhpur', country: 'India', costIndex: 'Low' },
+            { id: 11, name: 'Kochi', country: 'India', costIndex: 'Low' },
+            { id: 12, name: 'Madurai', country: 'India', costIndex: 'Low' },
+            { id: 13, name: 'Rishikesh', country: 'India', costIndex: 'Low' },
+            { id: 14, name: 'Paris', country: 'France', costIndex: 'High' },
+            { id: 15, name: 'London', country: 'United Kingdom', costIndex: 'High' },
+            { id: 16, name: 'Tokyo', country: 'Japan', costIndex: 'High' },
+            { id: 17, name: 'Rome', country: 'Italy', costIndex: 'Medium' },
+            { id: 18, name: 'New York City', country: 'USA', costIndex: 'High' },
+            { id: 19, name: 'Dubai', country: 'UAE', costIndex: 'High' },
+            { id: 20, name: 'Bangkok', country: 'Thailand', costIndex: 'Low' },
+            { id: 21, name: 'Istanbul', country: 'Turkey', costIndex: 'Medium' },
+            { id: 22, name: 'Singapore', country: 'Singapore', costIndex: 'High' },
+            { id: 23, name: 'Barcelona', country: 'Spain', costIndex: 'Medium' },
+            { id: 24, name: 'Kyoto', country: 'Japan', costIndex: 'Medium' },
+            { id: 25, name: 'Amsterdam', country: 'Netherlands', costIndex: 'High' },
+            { id: 26, name: 'Prague', country: 'Czech Republic', costIndex: 'Medium' },
+            { id: 27, name: 'Cairo', country: 'Egypt', costIndex: 'Low' },
+            { id: 28, name: 'Sydney', country: 'Australia', costIndex: 'High' }
         ],
         famousTrips: [
-            { id: 't1', title: 'Tokyo Neon Nights', country: 'Japan', region: 'Asia', cities: ['Tokyo'], days: 5, price: 1800, rating: 4.8, tags: ['Culture', 'City', 'Foodie'], gradient: 'linear-gradient(135deg,#f857a6,#ff5858)', icon: 'fa-solid fa-torii-gate', type: 'international', visaFree: false },
-            { id: 't2', title: 'Parisian Romance', country: 'France', region: 'Europe', cities: ['Paris'], days: 4, price: 1500, rating: 4.7, tags: ['Romance', 'Iconic'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-champagne-glasses', type: 'international', visaFree: false },
-            { id: 't3', title: 'Bali Bliss Retreat', country: 'Indonesia', region: 'Asia', cities: ['Bali', 'Ubud'], days: 7, price: 1200, rating: 4.9, tags: ['Beach', 'Relax', 'Budget'], gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: 'fa-solid fa-umbrella-beach', type: 'international', visaFree: true },
-            { id: 't4', title: 'Prague Old Town', country: 'Czech Republic', region: 'Europe', cities: ['Prague'], days: 3, price: 800, rating: 4.5, tags: ['History', 'Budget'], gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', icon: 'fa-solid fa-landmark', type: 'international', visaFree: false },
-            { id: 't5', title: 'Santorini Sunsets', country: 'Greece', region: 'Europe', cities: ['Santorini', 'Oia'], days: 5, price: 2200, rating: 4.9, tags: ['Beach', 'Luxury', 'Iconic'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-water', type: 'international', visaFree: false },
-            { id: 't6', title: 'New York City Pulse', country: 'USA', region: 'Americas', cities: ['New York'], days: 4, price: 2000, rating: 4.6, tags: ['City', 'Iconic'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-city', type: 'international', visaFree: false },
-            { id: 't7', title: 'Dubai Desert & Sky', country: 'UAE', region: 'Middle East', cities: ['Dubai'], days: 4, price: 2600, rating: 4.7, tags: ['Luxury', 'Desert'], gradient: 'linear-gradient(135deg,#f5a623,#f76b1c)', icon: 'fa-solid fa-hotel', type: 'international', visaFree: true },
-            { id: 't8', title: 'Iceland Ring Road', country: 'Iceland', region: 'Europe', cities: ['Reykjavik'], days: 8, price: 3200, rating: 4.8, tags: ['Nature', 'Adventure'], gradient: 'linear-gradient(135deg,#7de2fc,#b9b6e5)', icon: 'fa-solid fa-mountain-sun', type: 'international', visaFree: false },
-            { id: 't9', title: 'Kyoto Zen Journey', country: 'Japan', region: 'Asia', cities: ['Kyoto'], days: 6, price: 1900, rating: 4.8, tags: ['Culture', 'Nature'], gradient: 'linear-gradient(135deg,#f78ca0,#fe9a8b)', icon: 'fa-solid fa-spa', type: 'international', visaFree: true }
+            { id: 't1', title: 'Agra Taj Getaway', country: 'India', region: 'Asia', cities: ['Agra'], days: 2, price: 300, rating: 4.7, tags: ['Culture', 'Iconic'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-landmark', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/DZQkXVLZ/Agra.jpg' },
+            { id: 't2', title: 'Jaipur Pink City Trail', country: 'India', region: 'Asia', cities: ['Jaipur'], days: 3, price: 450, rating: 4.7, tags: ['Culture', 'City'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#f857a6,#ff5858)', icon: 'fa-solid fa-chess-rook', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/9f7jcwft/jaipur.jpg' },
+            { id: 't3', title: 'Varanasi Ganga Ghats', country: 'India', region: 'Asia', cities: ['Varanasi'], days: 3, price: 350, rating: 4.8, tags: ['Culture', 'Spiritual'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: 'fa-solid fa-om', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/Vk58HVQ4/Varanasi.jpg' },
+            { id: 't4', title: 'Udaipur Lake Romance', country: 'India', region: 'Asia', cities: ['Udaipur'], days: 3, price: 600, rating: 4.9, tags: ['Romance', 'Luxury'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-water', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/8PpDLCyF/Udaipur.jpg' },
+            { id: 't5', title: 'Mumbai City Rush', country: 'India', region: 'Asia', cities: ['Mumbai'], days: 4, price: 500, rating: 4.5, tags: ['City', 'Foodie'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-city', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/634TJpkf/Mumbai.jpg' },
+            { id: 't6', title: 'Amritsar Golden Temple', country: 'India', region: 'Asia', cities: ['Amritsar'], days: 2, price: 300, rating: 4.9, tags: ['Culture', 'Spiritual'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#f5a623,#f76b1c)', icon: 'fa-solid fa-place-of-worship', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/wMVpSKB6/Amritsar.jpg' },
+            { id: 't7', title: 'Bengaluru Garden City', country: 'India', region: 'Asia', cities: ['Bengaluru'], days: 3, price: 400, rating: 4.4, tags: ['City', 'Foodie'], weather: ['Warmer', 'Rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: 'fa-solid fa-city', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/FzmvWFNV/Bengaluru.jpg' },
+            { id: 't8', title: 'Shimla Hill Escape', country: 'India', region: 'Asia', cities: ['Shimla'], days: 4, price: 450, rating: 4.6, tags: ['Nature', 'Adventure'], weather: ['Colder', 'Snow'], gradient: 'linear-gradient(135deg,#7de2fc,#b9b6e5)', icon: 'fa-solid fa-mountain-sun', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/vB5MtxFQ/Shimla.jpg' },
+            { id: 't9', title: 'Mysore Palace Tour', country: 'India', region: 'Asia', cities: ['Mysore'], days: 2, price: 300, rating: 4.6, tags: ['Culture', 'Iconic'], weather: ['Warmer', 'No rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#f78ca0,#fe9a8b)', icon: 'fa-solid fa-landmark', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/vmgGDS0x/Mysore.jpg' },
+            { id: 't10', title: 'Jodhpur Blue City', country: 'India', region: 'Asia', cities: ['Jodhpur'], days: 3, price: 400, rating: 4.7, tags: ['Culture', 'City'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', icon: 'fa-solid fa-fort-awesome', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/0yNk1NDR/Jodhpur.jpg' },
+            { id: 't11', title: 'Kochi Backwater Calm', country: 'India', region: 'Asia', cities: ['Kochi'], days: 3, price: 380, rating: 4.7, tags: ['Beach', 'Relax'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: 'fa-solid fa-umbrella-beach', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/c1Q4Q20m/Kochi.jpg' },
+            { id: 't12', title: 'Madurai Temple Trail', country: 'India', region: 'Asia', cities: ['Madurai'], days: 2, price: 280, rating: 4.6, tags: ['Culture', 'Spiritual'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: 'fa-solid fa-place-of-worship', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/QCr82kkH/Madurai.jpg' },
+            { id: 't13', title: 'Rishikesh Riverside Zen', country: 'India', region: 'Asia', cities: ['Rishikesh'], days: 4, price: 350, rating: 4.8, tags: ['Adventure', 'Nature'], weather: ['Colder', 'Rain'], gradient: 'linear-gradient(135deg,#7de2fc,#b9b6e5)', icon: 'fa-solid fa-person-hiking', type: 'domestic', visaFree: true, image: 'https://i.postimg.cc/7LdYVyC8/Rishikesh.jpg' },
+            { id: 't14', title: 'Parisian Romance', country: 'France', region: 'Europe', cities: ['Paris'], days: 4, price: 1500, rating: 4.7, tags: ['Romance', 'Iconic'], weather: ['Colder', 'No rain'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-champagne-glasses', type: 'international', visaFree: false, image: 'https://i.postimg.cc/4Nm2CkyQ/Paris.jpg' },
+            { id: 't15', title: 'London City Lights', country: 'United Kingdom', region: 'Europe', cities: ['London'], days: 5, price: 2100, rating: 4.6, tags: ['City', 'Iconic'], weather: ['Colder', 'Rain'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-landmark', type: 'international', visaFree: false, image: 'https://i.postimg.cc/BZh7wQSt/London.jpg' },
+            { id: 't16', title: 'Tokyo Neon Nights', country: 'Japan', region: 'Asia', cities: ['Tokyo'], days: 5, price: 1800, rating: 4.8, tags: ['Culture', 'City', 'Foodie'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#f857a6,#ff5858)', icon: 'fa-solid fa-torii-gate', type: 'international', visaFree: false, image: 'https://i.postimg.cc/d3SW7nHR/Tokyo.jpg' },
+            { id: 't17', title: 'Rome Ancient Wonders', country: 'Italy', region: 'Europe', cities: ['Rome'], days: 4, price: 1600, rating: 4.8, tags: ['History', 'Iconic'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', icon: 'fa-solid fa-landmark', type: 'international', visaFree: false, image: 'https://i.postimg.cc/7hLsYjVv/Rome.jpg' },
+            { id: 't18', title: 'New York City Pulse', country: 'USA', region: 'Americas', cities: ['New York City'], days: 4, price: 2000, rating: 4.6, tags: ['City', 'Iconic'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-city', type: 'international', visaFree: false, image: 'https://i.postimg.cc/ZR4sXWvJ/New-York-City.jpg' },
+            { id: 't19', title: 'Dubai Desert & Sky', country: 'UAE', region: 'Middle East', cities: ['Dubai'], days: 4, price: 2600, rating: 4.7, tags: ['Luxury', 'Desert'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#f5a623,#f76b1c)', icon: 'fa-solid fa-hotel', type: 'international', visaFree: true, image: 'https://i.postimg.cc/6QsmLj9j/Dubai.jpg' },
+            { id: 't20', title: 'Bangkok Street & Temple', country: 'Thailand', region: 'Asia', cities: ['Bangkok'], days: 4, price: 1000, rating: 4.6, tags: ['Culture', 'Foodie', 'Budget'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#f78ca0,#fe9a8b)', icon: 'fa-solid fa-place-of-worship', type: 'international', visaFree: true, image: 'https://i.postimg.cc/6p4PZJxS/Bangkok.jpg' },
+            { id: 't21', title: 'Istanbul Two Continents', country: 'Turkey', region: 'Europe', cities: ['Istanbul'], days: 4, price: 1300, rating: 4.7, tags: ['Culture', 'Iconic'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: 'fa-solid fa-mosque', type: 'international', visaFree: true, image: 'https://i.postimg.cc/15t29VCy/Istanbul.jpg' },
+            { id: 't22', title: 'Singapore Skyline', country: 'Singapore', region: 'Asia', cities: ['Singapore'], days: 3, price: 1900, rating: 4.8, tags: ['City', 'Luxury'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-city', type: 'international', visaFree: false, image: 'https://i.postimg.cc/pVk3bJBs/Singapore.jpg' },
+            { id: 't23', title: 'Barcelona Coastal Charm', country: 'Spain', region: 'Europe', cities: ['Barcelona'], days: 4, price: 1400, rating: 4.7, tags: ['Culture', 'Beach'], weather: ['Warmer', 'No rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: 'fa-solid fa-water', type: 'international', visaFree: false, image: 'https://i.postimg.cc/7hPcJ5qV/Barcelona.jpg' },
+            { id: 't24', title: 'Kyoto Zen Journey', country: 'Japan', region: 'Asia', cities: ['Kyoto'], days: 6, price: 1900, rating: 4.8, tags: ['Culture', 'Nature'], weather: ['Warmer', 'Rain'], gradient: 'linear-gradient(135deg,#f78ca0,#fe9a8b)', icon: 'fa-solid fa-spa', type: 'international', visaFree: false, image: 'https://i.postimg.cc/KYLC6X9t/Kyoto.jpg' },
+            { id: 't25', title: 'Amsterdam Canal Days', country: 'Netherlands', region: 'Europe', cities: ['Amsterdam'], days: 3, price: 1550, rating: 4.6, tags: ['City', 'Culture'], weather: ['Colder', 'Rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: 'fa-solid fa-city', type: 'international', visaFree: false, image: 'https://i.postimg.cc/CxR34nbS/Amsterdam.jpg' },
+            { id: 't26', title: 'Prague Old Town', country: 'Czech Republic', region: 'Europe', cities: ['Prague'], days: 3, price: 800, rating: 4.5, tags: ['History', 'Budget'], weather: ['Colder', 'No rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#a18cd1,#fbc2eb)', icon: 'fa-solid fa-landmark', type: 'international', visaFree: false, image: 'https://i.postimg.cc/nchbCPLy/Prague.jpg' },
+            { id: 't27', title: 'Cairo Pyramids Trail', country: 'Egypt', region: 'Africa', cities: ['Cairo'], days: 4, price: 1100, rating: 4.6, tags: ['History', 'Iconic'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-monument', type: 'international', visaFree: true, image: 'https://i.postimg.cc/T1Qztrk5/Cairo.jpg' },
+            { id: 't28', title: 'Sydney Harbour Views', country: 'Australia', region: 'Oceania', cities: ['Sydney'], days: 5, price: 2300, rating: 4.8, tags: ['City', 'Nature'], weather: ['Colder', 'No rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-water', type: 'international', visaFree: false, image: 'https://i.postimg.cc/NFgh8NkP/Sydney.jpg' }
         ],
         activeTrip: {
             title: 'Euro-Asian Express Tour',
@@ -101,7 +137,7 @@ function appData() {
         },
         get hasActiveFilters() {
             const f = this.appliedFilters;
-            return f.sortBy !== 'popular' || f.maxBudget < 4000 || f.duration !== 'any' || f.region !== 'all' || this.searchQuery.trim() !== '' || this.tripType !== 'all';
+            return f.tripType !== 'all' || f.sortBy !== 'popular' || f.maxBudget < 3000 || f.maxDays < 8 || f.weatherTags.length > 0 || f.region !== 'all' || this.searchQuery.trim() !== '' || this.travelTo !== '';
         },
         get filteredTrips() {
             let list = this.famousTrips.slice();
@@ -115,14 +151,15 @@ function appData() {
                     t.tags.join(' ').toLowerCase().includes(q)
                 );
             }
-            if (this.tripType === 'visaFree') list = list.filter(t => t.visaFree);
-            else if (this.tripType !== 'all') list = list.filter(t => t.type === this.tripType);
+            if (this.travelTo) {
+                list = list.filter(t => t.cities.includes(this.travelTo));
+            }
             const f = this.appliedFilters;
+            if (f.tripType !== 'all') list = list.filter(t => t.type === f.tripType);
             list = list.filter(t => t.price <= f.maxBudget);
+            list = list.filter(t => t.days <= f.maxDays);
             if (f.region !== 'all') list = list.filter(t => t.region === f.region);
-            if (f.duration === 'weekend') list = list.filter(t => t.days <= 3);
-            else if (f.duration === 'short') list = list.filter(t => t.days >= 4 && t.days <= 6);
-            else if (f.duration === 'long') list = list.filter(t => t.days >= 7);
+            if (f.weatherTags.length > 0) list = list.filter(t => t.weather.some(w => f.weatherTags.includes(w)));
             switch (f.sortBy) {
                 case 'priceLow': list.sort((a, b) => a.price - b.price); break;
                 case 'priceHigh': list.sort((a, b) => b.price - a.price); break;
@@ -172,22 +209,25 @@ function appData() {
 
         /* ---------- filter methods ---------- */
         applyFilters() {
-            this.appliedFilters = Object.assign({}, this.filters);
-            this.showFilters = false;
-            if (this.currentTab !== 'dashboard') this.currentTab = 'dashboard';
+            this.appliedFilters = Object.assign({}, this.filters, { weatherTags: this.filters.weatherTags.slice() });
             this.showToast('Filters applied');
         },
         resetFilters() {
-            this.filters = { sortBy: 'popular', maxBudget: 4000, duration: 'any', region: 'all' };
-            this.appliedFilters = Object.assign({}, this.filters);
+            this.filters = { tripType: 'all', sortBy: 'popular', maxBudget: 3000, maxDays: 8, weatherTags: [], region: 'all' };
+            this.appliedFilters = Object.assign({}, this.filters, { weatherTags: [] });
         },
         clearAll() {
             this.searchQuery = '';
+            this.travelTo = '';
             this.resetFilters();
-            this.tripType = 'all';
         },
         toggleTripType(value) {
-            this.tripType = value;
+            this.filters.tripType = value;
+        },
+        toggleWeatherTag(tag) {
+            const i = this.filters.weatherTags.indexOf(tag);
+            if (i === -1) this.filters.weatherTags.push(tag);
+            else this.filters.weatherTags.splice(i, 1);
         },
 
         /* ---------- trip methods ---------- */
@@ -248,7 +288,6 @@ function appData() {
         },
         toggleShareMode() {
             this.isShareView = !this.isShareView;
-            if (this.isShareView) this.showFilters = false;
         },
 
         /* ---------- chart ---------- */
