@@ -118,43 +118,78 @@ App runs on `http://localhost:3000` *(or your configured port)* 🚀
 
 ## 👥 Meet The Team
 
-> 🔧 *Roles are suggestions — adjust as you like. Add each member's GitHub handle.*
-
-| 👤 Name | 🧩 Role | 🔗 GitHub |
-|---------|---------|-----------|
-| **Rachit Shrirame** | Team Lead & Backend | [@NotRachittt](https://github.com/NotRachittt) |
-| **Rakesh Chaudhary** | Backend & Database | `🔧 @username` |
-| **Manashree Chandak** | Frontend & UI/UX | `🔧 @username` |
-| **Moksha Zambad** | Frontend & Integration | `🔧 @username` |
+| 👤 Name               | 🧩 Role                 | 💻 Main Contributions                                                              |
+| --------------------- | ----------------------- | ---------------------------------------------------------------------------------- |
+| **Rachit Shrirame**   | Frontend & Logic        | Error solving, logic refinement, `eyes.js` animations and Neo-Brutalism login page |
+| **Rakesh Chaudhary**  | Database & Travel Tools | Database management, Supabase and currency, timezone & translator tools            |
+| **Manashree Chandak** | Frontend & UI/UX        | Settings, Trips, base HTML, styling and Supabase scripts                           |
+| **Moksha Zambad**     | Admin Panel & UI/UX     | Admin Panel, Admin UI/UX and Supabase integration                                  |
 
 ---
 
-## 🤝 Contribution Guidelines
+## 🧩 Individual Contributions
 
-To keep our work synced and every contribution visible 💪
+### 👨‍💻 Rachit Shrirame — Frontend, Logic & Animations
 
-- 🔄 **Pull first:** always `git pull` before you start and before you push
-- ⏱️ **Commit hourly:** push to `main` at least once every hour
-- 🏷️ **Clear messages:** e.g. `Add trip model`, `Fix budget chart` — not `update` / `final`
-- 🙋 **Own your work:** every member commits their own code with their own GitHub identity
+Rachit contributed to the application's **frontend logic, debugging and interactive visual experience**.
 
-```bash
-git pull
-git add .
-git commit -m "Clear message about what you did"
-git push
-```
+**Contributions:**
 
----
-
-## 📹 Demo
-
-> 🔧 *Add your demo video link here after coding ends.*
-
-🎥 **[Watch the Demo →](#)**
+* 🐛 Solved frontend and application errors
+* 🧠 Refined and improved application logic
+* 👀 Developed and worked on `eyes.js`
+* ✨ Added interactive animations to the login page
+* 🎨 Designed the login experience around a **Neo-Brutalism theme**
+* 🖥️ Improved the overall frontend interaction and visual behavior
+* 🔧 Helped debug and refine existing features
 
 ---
 
+### 👨‍💻 Rakesh Chaudhary — Database & Travel Tools
+
+Rakesh handled the project's **database management and travel utility features**.
+
+**Contributions:**
+
+* 🗄️ Managed the project database
+* ☁️ Worked with **Supabase**
+* 💱 Added currency conversion functionality
+* 🌍 Added timezone functionality
+* 🌐 Added translator functionality
+* 🔧 Worked on database and backend integration
+
+---
+
+### 👩‍💻 Manashree Chandak — Frontend & UI/UX
+
+Manashree worked extensively on the **frontend structure, styling and trip-related features**.
+
+**Contributions:**
+
+* ⚙️ Developed the **Settings** section
+* 🧳 Developed the **Trips** section
+* 🧱 Worked on the base HTML structure
+* 🎨 Handled application styling
+* 🖥️ Worked on frontend UI/UX
+* ☁️ Added and managed Supabase scripts
+* 🔗 Helped integrate frontend functionality
+
+---
+
+### 👩‍💻 Moksha Zambad — Admin Panel & UI/UX
+
+Moksha worked primarily on the **Admin Panel and Admin UI/UX**.
+
+**Contributions:**
+
+* 🛠️ Developed the **Admin Panel**
+* 📄 Worked on `admin.html`
+* ⚙️ Worked on `admin.js`
+* 🎨 Designed and implemented the **Admin UI/UX**
+* ☁️ Added **Supabase integration**
+* 🗄️ Connected administrative functionality with the database
+* 📊 Designed the administrative interface for easier management
+* ✨ Focused on usability and visual organization of the admin dashboard
 ## 🙏 Acknowledgements
 
 - **Odoo x LDCE Ahmedabad** for hosting Hackathon '26
