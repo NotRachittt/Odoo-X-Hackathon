@@ -1,12 +1,25 @@
+/* ================================================================
+   Supabase config — replace these two values with your own project's
+   Project URL and anon/public key (Supabase dashboard → Settings → API).
+   ================================================================ */
+const SUPABASE_URL = 'https://swtrckoomvtrhkraxhce.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_W7yLXagaQYuyDuPY9bokFA__hCdth9Y';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 function appData() {
     return {
         /* ---------- auth ---------- */
         isAuthenticated: false,
+        authLoading: true,
         authMode: 'login',
         authForm: { name: '', email: '', password: '' },
         authError: '',
         showPassword: false,
-        user: { name: '', email: '' },
+        user: { id: '', name: '', email: '' },
+        profile: { name: '', phone: '', home_city: '', bio: '' },
+        isAdmin: false,
+        myTrips: [],
+        currentTripId: null,
 
         /* ---------- ui ---------- */
         currentTab: 'dashboard',
@@ -95,26 +108,7 @@ function appData() {
             { id: 't27', title: 'Cairo Pyramids Trail', country: 'Egypt', region: 'Africa', cities: ['Cairo'], days: 4, price: 1100, rating: 4.6, tags: ['History', 'Iconic'], weather: ['Warmer', 'No rain'], gradient: 'linear-gradient(135deg,#f6d365,#fda085)', icon: 'fa-solid fa-monument', type: 'international', visaFree: true, image: 'https://i.postimg.cc/T1Qztrk5/Cairo.jpg' },
             { id: 't28', title: 'Sydney Harbour Views', country: 'Australia', region: 'Oceania', cities: ['Sydney'], days: 5, price: 2300, rating: 4.8, tags: ['City', 'Nature'], weather: ['Colder', 'No rain', 'Pollution free'], gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: 'fa-solid fa-water', type: 'international', visaFree: false, image: 'https://i.postimg.cc/NFgh8NkP/Sydney.jpg' }
         ],
-        activeTrip: {
-            title: 'Euro-Asian Express Tour',
-            description: 'A 10-day cultural exploration across key iconic destinations.',
-            startDate: '2026-09-10',
-            endDate: '2026-09-20',
-            targetBudget: 2500,
-            stops: [
-                {
-                    id: 101, cityName: 'Tokyo', items: [
-                        { title: 'Shinjuku Hotel Stay', category: 'stay', cost: 450 },
-                        { title: 'Senso-ji Temple Tour', category: 'activities', cost: 30 },
-                        { title: 'Ramen Tasting Experience', category: 'meals', cost: 60 }]
-                },
-                {
-                    id: 102, cityName: 'Paris', items: [
-                        { title: 'Eiffel Tower Admission', category: 'activities', cost: 40 },
-                        { title: 'Metro Transit Pass', category: 'transport', cost: 35 }]
-                }
-            ]
-        },
+        activeTrip: { title: 'Untitled Adventure', description: 'Start adding cities and activities to build your plan.', startDate: '', endDate: '', targetBudget: 2000, stops: [] },
         newItem: { title: '', category: 'activities', cost: '' },
 
         /* ---------- computed ---------- */
@@ -171,40 +165,196 @@ function appData() {
         },
 
         /* ---------- auth methods ---------- */
-        login() {
-            if (!this.authForm.email || !this.authForm.password) { this.authError = 'Please enter your email and password.'; return; }
-            this.user.name = this.deriveName(this.authForm.email);
-            this.user.email = this.authForm.email;
-            this.finishAuth('Welcome back, ' + this.user.name + '!');
+        async init() {
+            // Restore an existing Supabase session (page refresh, revisit) if there is one.
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    await this.loadSessionUser(session.user);
+                }
+            } catch (e) {
+                console.error('Session restore failed', e);
+            }
+            this.authLoading = false;
         },
-        signup() {
+        emptyTrip() {
+            return { title: 'Untitled Adventure', description: 'Start adding cities and activities to build your plan.', startDate: '', endDate: '', targetBudget: 2000, stops: [] };
+        },
+        async loadSessionUser(authUser) {
+            this.user.id = authUser.id;
+            this.user.email = authUser.email;
+            this.user.name = this.deriveName(authUser.email);
+            const { data: profileRow } = await sb.from('profiles').select('*').eq('id', authUser.id).single();
+            if (profileRow) {
+                this.user.name = profileRow.name || this.user.name;
+                this.profile = {
+                    name: profileRow.name || '',
+                    phone: profileRow.phone || '',
+                    home_city: profileRow.home_city || '',
+                    bio: profileRow.bio || ''
+                };
+                this.isAdmin = profileRow.role === 'admin';
+            }
+            this.isAuthenticated = true;
+            this.activeTrip = this.emptyTrip();
+            this.currentTripId = null;
+            await this.loadMyTrips();
+        },
+        async login() {
+            if (!this.authForm.email || !this.authForm.password) { this.authError = 'Please enter your email and password.'; return; }
+            this.authError = '';
+            const { data, error } = await sb.auth.signInWithPassword({ email: this.authForm.email, password: this.authForm.password });
+            if (error) { this.authError = error.message; return; }
+            await this.loadSessionUser(data.user);
+            await this.logActivity('login', 'Logged in');
+            this.currentTab = 'dashboard';
+            this.showToast('Welcome back, ' + this.user.name + '!');
+        },
+        async signup() {
             if (!this.authForm.name || !this.authForm.email || !this.authForm.password) { this.authError = 'Please fill in all fields to sign up.'; return; }
-            if (this.authForm.password.length < 4) { this.authError = 'Password should be at least 4 characters.'; return; }
-            this.user.name = this.authForm.name;
-            this.user.email = this.authForm.email;
-            this.finishAuth('Account created — happy travels, ' + this.user.name + '!');
+            if (this.authForm.password.length < 6) { this.authError = 'Password should be at least 6 characters.'; return; }
+            this.authError = '';
+            const { data, error } = await sb.auth.signUp({
+                email: this.authForm.email,
+                password: this.authForm.password,
+                options: { data: { name: this.authForm.name } }
+            });
+            if (error) { this.authError = error.message; return; }
+            if (data.session) {
+                await this.loadSessionUser(data.user);
+                await this.logActivity('signup', 'Account created');
+                this.currentTab = 'dashboard';
+                this.showToast('Account created — happy travels, ' + this.authForm.name + '!');
+            } else {
+                // Email confirmation is required before a session exists.
+                this.authMode = 'login';
+                this.showToast('Account created — check your email to confirm, then log in.');
+            }
         },
         guestMode() {
-            this.user.name = 'Guest';
-            this.user.email = '';
-            this.finishAuth('Exploring as guest — enjoy!');
-        },
-        finishAuth(msg) {
-            this.authError = '';
+            this.user = { id: '', name: 'Guest', email: '' };
             this.isAuthenticated = true;
+            this.activeTrip = this.emptyTrip();
+            this.currentTripId = null;
             this.currentTab = 'dashboard';
-            this.showToast(msg);
+            this.showToast('Exploring as guest — enjoy! (guest activity isn\'t saved)');
         },
-        logout() {
+        async logout() {
+            if (this.user.id) await this.logActivity('logout', 'Logged out');
+            if (this.user.id) await sb.auth.signOut();
             this.isAuthenticated = false;
             this.showUserMenu = false;
             this.authForm = { name: '', email: '', password: '' };
             this.authMode = 'login';
             this.currentTab = 'dashboard';
+            this.user = { id: '', name: '', email: '' };
+            this.profile = { name: '', phone: '', home_city: '', bio: '' };
+            this.isAdmin = false;
+            this.myTrips = [];
+            this.currentTripId = null;
+            this.activeTrip = this.emptyTrip();
         },
         deriveName(email) {
             const base = email.split('@')[0].replace(/[._-]+/g, ' ');
             return base.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        },
+        async saveProfile() {
+            if (!this.user.id) { this.showToast('Guest sessions can\'t save settings.'); return; }
+            const { error } = await sb.from('profiles').update({
+                name: this.profile.name,
+                phone: this.profile.phone,
+                home_city: this.profile.home_city,
+                bio: this.profile.bio
+            }).eq('id', this.user.id);
+            if (error) { this.showToast('Could not save settings: ' + error.message); return; }
+            this.user.name = this.profile.name || this.user.name;
+            await this.logActivity('update_profile', 'Updated profile settings');
+            this.showToast('Settings saved');
+        },
+
+        /* ---------- persistence (trips/stops/items) ---------- */
+        async logActivity(action, details) {
+            if (!this.user.id) return; // guests aren't tracked
+            try {
+                await sb.from('activity_log').insert({
+                    user_id: this.user.id,
+                    user_email: this.user.email,
+                    action: action,
+                    details: details || ''
+                });
+            } catch (e) {
+                console.error('Activity log failed', e);
+            }
+        },
+        async loadMyTrips() {
+            if (!this.user.id) { this.myTrips = []; return; }
+            const { data, error } = await sb.from('trips').select('id, title, target_budget, updated_at').eq('user_id', this.user.id).order('updated_at', { ascending: false });
+            if (!error) this.myTrips = data || [];
+        },
+        async persistTrip() {
+            if (!this.user.id) return; // guests aren't saved
+            try {
+                let tripId = this.currentTripId;
+                const tripPayload = {
+                    user_id: this.user.id,
+                    title: this.activeTrip.title,
+                    description: this.activeTrip.description,
+                    start_date: this.activeTrip.startDate || null,
+                    end_date: this.activeTrip.endDate || null,
+                    target_budget: this.activeTrip.targetBudget || 0,
+                    updated_at: new Date().toISOString()
+                };
+                if (tripId) {
+                    await sb.from('trips').update(tripPayload).eq('id', tripId);
+                    await sb.from('stops').delete().eq('trip_id', tripId);
+                } else {
+                    const { data, error } = await sb.from('trips').insert(tripPayload).select('id').single();
+                    if (error) throw error;
+                    tripId = data.id;
+                    this.currentTripId = tripId;
+                }
+                for (const stop of this.activeTrip.stops) {
+                    const { data: stopRow, error: stopErr } = await sb.from('stops').insert({ trip_id: tripId, city_name: stop.cityName }).select('id').single();
+                    if (stopErr) throw stopErr;
+                    if (stop.items.length) {
+                        const itemRows = stop.items.map(it => ({ stop_id: stopRow.id, title: it.title, category: it.category, cost: it.cost }));
+                        await sb.from('items').insert(itemRows);
+                    }
+                }
+                await this.loadMyTrips();
+            } catch (e) {
+                console.error('Trip save failed', e);
+            }
+        },
+        async loadTrip(tripId) {
+            const { data: trip, error } = await sb.from('trips').select('*').eq('id', tripId).single();
+            if (error || !trip) { this.showToast('Could not load that trip.'); return; }
+            const { data: stops } = await sb.from('stops').select('*, items(*)').eq('trip_id', tripId);
+            this.activeTrip = {
+                title: trip.title,
+                description: trip.description || '',
+                startDate: trip.start_date || '',
+                endDate: trip.end_date || '',
+                targetBudget: trip.target_budget || 0,
+                stops: (stops || []).map(s => ({
+                    id: s.id,
+                    cityName: s.city_name,
+                    items: (s.items || []).map(it => ({ title: it.title, category: it.category, cost: it.cost }))
+                }))
+            };
+            this.currentTripId = trip.id;
+            this.currentTab = 'planner';
+            this.updateChart();
+            this.showToast('Loaded "' + trip.title + '"');
+        },
+        async deleteTrip(tripId) {
+            await sb.from('trips').delete().eq('id', tripId);
+            if (this.currentTripId === tripId) {
+                this.currentTripId = null;
+                this.activeTrip = this.emptyTrip();
+            }
+            await this.loadMyTrips();
+            this.showToast('Trip deleted');
         },
 
         /* ---------- filter methods ---------- */
@@ -232,10 +382,12 @@ function appData() {
 
         /* ---------- trip methods ---------- */
         newTrip() {
+            this.currentTripId = null;
             this.activeTrip = { title: 'Untitled Adventure', description: 'Start adding cities and activities to build your plan.', startDate: '2026-10-01', endDate: '2026-10-07', targetBudget: 2000, stops: [] };
             this.currentTab = 'planner';
             this.updateChart();
             this.showToast('New trip created — start adding stops!');
+            this.logActivity('new_trip', 'Started a new blank trip');
         },
         startTripFromFamous(trip) {
             const stops = trip.cities.map((c, i) => ({
@@ -246,6 +398,7 @@ function appData() {
                     { title: c + ' Highlights Tour', category: 'activities', cost: Math.round(trip.price * 0.15) }
                 ] : []
             }));
+            this.currentTripId = null;
             this.activeTrip = {
                 title: trip.title,
                 description: trip.days + '-day ' + trip.region + ' journey • ' + trip.cities.join(' → '),
@@ -257,15 +410,20 @@ function appData() {
             this.currentTab = 'planner';
             this.updateChart();
             this.showToast('Loaded "' + trip.title + '" into the planner ✈');
+            this.logActivity('load_famous_trip', 'Loaded template: ' + trip.title);
+            this.persistTrip();
         },
         addStop(city) {
             this.activeTrip.stops.push({ id: Date.now(), cityName: city.name, items: [] });
             this.updateChart();
             this.showToast(city.name + ' added as a stop');
+            this.logActivity('add_stop', city.name);
+            this.persistTrip();
         },
         removeStop(index) {
             this.activeTrip.stops.splice(index, 1);
             this.updateChart();
+            this.persistTrip();
         },
         addItem() {
             if (!this.newItem.title || !this.newItem.cost || this.activeTrip.stops.length === 0) return;
@@ -273,6 +431,8 @@ function appData() {
             this.newItem.title = '';
             this.newItem.cost = '';
             this.updateChart();
+            this.logActivity('add_expense', this.activeTrip.stops[0].items.at(-1).title + ' ($' + this.activeTrip.stops[0].items.at(-1).cost + ')');
+            this.persistTrip();
         },
         calculateTotalCost() {
             let total = 0;
