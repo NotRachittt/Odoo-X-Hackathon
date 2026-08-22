@@ -59,11 +59,11 @@ Users can explore global destinations, build structured day-wise itineraries, es
 
 | Layer | Technology |
 |-------|------------|
-| 🎨 **Frontend** | `🔧 e.g. React + Tailwind CSS` |
-| ⚙️ **Backend** | `🔧 e.g. Node.js + Express  /  Django` |
-| 🗄️ **Database** | `PostgreSQL` *(relational)* |
-| 📈 **Charts** | `🔧 e.g. Chart.js / Recharts` |
-| 🔧 **Version Control** | `Git + GitHub` |
+| 🎨  |  |
+| ⚙️  |  |
+| 🗄️  |  |
+| 📈  |  |
+| 🔧  |  |
 
 ---
 
@@ -122,10 +122,10 @@ App runs on `http://localhost:3000` *(or your configured port)* 🚀
 
 | 👤 Name | 🧩 Role | 🔗 GitHub |
 |---------|---------|-----------|
-| **Rachit Shrirame** | Team Lead & Backend | [@NotRachittt](https://github.com/NotRachittt) |
-| **Rakesh Chaudhary** | Backend & Database | `🔧 @username` |
-| **Manashree Chandak** | Frontend & UI/UX | `🔧 @username` |
-| **Moksha Zambad** | Frontend & Integration | `🔧 @username` |
+| **Rachit Shrirame** |  | [@NotRachittt](https://github.com/NotRachittt) |
+| **Rakesh Chaudhary** |  | `🔧 @username` |
+| **Manashree Chandak** |  | `🔧 @username` |
+| **Moksha Zambad** |  | `🔧 @username` |
 
 ---
 
